@@ -33,6 +33,8 @@ $(document).ready(function(){
         var wins = 0;
         var losses = 0;
         var turn = 0;
+    
+        var chat = '';
 
 
     // At the initial load and subsequent value changes, get a snapshot of the stored data.
@@ -48,8 +50,8 @@ $(document).ready(function(){
             player1 = snapshot.val().player1;
             var player1Name = player1.name;
 
-            // Update html to show player 1's name
-            $('#player-1-name').text(player1Name);
+            // Update html
+            $('#player-1-name').html('<h3>' + player1Name + '</h3>');
         }
         // If player 1 does not exist in database
 
@@ -62,10 +64,20 @@ $(document).ready(function(){
             var player2Name = player2.name;
 
             // Update html to show player 2's name
-            $('#player-2-name').text(player2Name);
+            $('#player-2-name').html('<h3>' + player2Name + '</h3>');
         }
         // If player 2 does not exist in database
-        
+
+        // NO PLAYERS
+        if ( (player1 === null) && (player2 === null) ) {
+
+            // Remove chat from database storage
+            database.ref('chat').remove();
+
+            // Clear chatbox display
+            $('#chat-messages').empty();
+        }
+
     });
 
 
@@ -89,6 +101,7 @@ $(document).ready(function(){
         // For player 2 screen
             // show name and win/loss count only in div id 'player-1'
 
+    // When 'Start' button clicked
     $("#add-player-btn").on("click", function(event){
         event.preventDefault();
 
@@ -236,7 +249,47 @@ $(document).ready(function(){
 
 
     // WHEN A PLAYER LEAVES
+
+    // CHAT
+    // When 'Send' button clicked, add to database
+    $('#send-message-btn').on('click', function(event) {
+        event.preventDefault();
+
+        // If message entered and player name exists
+        if ( (name !== '') && ($('#chat-input').val().trim() !== '') ) {
+
+            // Store message in var
+            var message = name + ': ' + $('#chat-input').val().trim();
+
+            // Clear input
+            $('#chat-input').val('');
+
+            // Get key for new chat entry
+            database.ref().child('chat').push(message);
+
+        }
+    })
+
+    // Display new messages to chatbox
+    database.ref('chat').on('child_added', function(snapshot) {
+
+        // Store retrieved message in var
+        var newMessage = snapshot.val();
+        // Create div to hold the message
+        var chatEntry = $('<div>').html(newMessage);
+
+        // Change color of message
+        if (newMessage.startsWith(name)) {
+            chatEntry.addClass('selfColor');
+        }
+        else {
+            chatEntry.addClass('opponentColor');
+        }
+
+        // Add to chat display
+        $('#chat-messages').append(chatEntry);
+
+    })
 });
 
 
-// https://github.com/angrbrd/multiplayer-rps/blob/master/assets/js/app.js
