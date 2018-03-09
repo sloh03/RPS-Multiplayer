@@ -1,0 +1,12 @@
+#logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    margin-top: 2%;
+}
+
+.input-group {
+    width: 300px;
+    margin: auto;
+}

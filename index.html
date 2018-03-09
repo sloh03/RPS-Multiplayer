@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+  <head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Reset CSS -->
+	<link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+	<!-- Customize CSS -->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+
+	<!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>    
+    <script src="assets/javascript/app.js"></script>
+
+    <!-- Firebase Reference -->
+    <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+
+    <title>RPS-Multiplayer</title>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <img id="logo" src="assets/images/coollogo_com-21311260.png" alt="">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <!-- Name Form -->
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Name" id="player-name-input">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="add-player-btn">Start</button>
+                    </span>
+                </div>
+                
+                <!-- Welcome Message -->
+                <h4 class="text-center" id="player-greeting">Hi _______! You are Player __.</h4>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h4 class="text-center" id="player-turn-status">Status</h4>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-body" id="player-1">
+                        <h3 class="text-center">Player 1</h3>
+                        <h4 class="text-center">Rock</h4>
+                        <h4 class="text-center">Paper</h4>
+                        <h4 class="text-center">Scissors</h4>
+                        <h5 class="text-center">Wins: 0 Losses: 0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <br>
+                <h1 class="text-center" id="win-loss-status">Player Wins!</h1>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-body" id="player-2">
+                        <h3 class="text-center">Player 2</h3>
+                        <h4 class="text-center">Rock</h4>
+                        <h4 class="text-center">Paper</h4>
+                        <h4 class="text-center">Scissors</h4>
+                        <h5 class="text-center">Wins: 0 Losses: 0</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h4 class="text-center" id="chat">Chat will go here</h4>
+            </div>
+        </div>
+
+    </div>
+
+  </body>
+
+</html>
