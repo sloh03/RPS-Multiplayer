@@ -16,6 +16,10 @@ $(document).ready(function(){
     // Assign reference to database to var 'database'
     var database = firebase.database();
 
+    // Create objects for the 2 players
+    var player1 = null;
+    var player2 = null;
+
     // Set initial values for each player and turn
         // player
             // name
@@ -31,10 +35,38 @@ $(document).ready(function(){
         var turn = 0;
 
 
-
     // At the initial load and subsequent value changes, get a snapshot of the stored data.
     // This function allows you to update your page in real-time when the firebase database changes.
     // ?
+    database.ref('players').on('value', function(snapshot) {
+
+        // PLAYER 1
+        // If player 1 exists in the database
+        if (snapshot.child('player1').exists()) {
+
+            // Get a snapshot of player 1 object
+            player1 = snapshot.val().player1;
+            var player1Name = player1.name;
+
+            // Update html to show player 1's name
+            $('#player-1-name').text(player1Name);
+        }
+        // If player 1 does not exist in database
+
+        // PLAYER 2
+        // If player 2 exists in the database
+        if (snapshot.child('player2').exists()) {
+
+            // Get a snapshot of player 2 object
+            player1 = snapshot.val().player2;
+            var player2Name = player2.name;
+
+            // Update html to show player 2's name
+            $('#player-2-name').text(player2Name);
+        }
+        // If player 2 does not exist in database
+        
+    });
 
 
     // INITIAL PAGE SET UP
@@ -59,19 +91,58 @@ $(document).ready(function(){
 
     $("#add-player-btn").on("click", function(event){
         event.preventDefault();
+
+        // If a name is entered when no players exist
+        if ( ($('#player-name-input').val().trim() !== '') && (player1 === null) && (player2 === null) ) {
+
+            // Set name to value entered
+            name = $('#player-name-input').val().trim();
+            console.log('Player 1 = ' + name);
+
+            // Create object components for player 1
+            player1 = {
+                name: name,
+                wins: 0,
+                losses: 0,
+                choice: ""
+            };
+
+            // Add player1 to database
+            database.ref().child("/players/player1").set(player1);
+
+            // Set turn value to 1 to indicate player 1 goes first
+            database.ref().child('/turn').set(1);
+
+            // If player1 disconnects, remove from database
+            database.ref('/players/player1').onDisconnect().remove();
+
+        }
+
+        // Else if a name is entered when player 1 exists
+        else if ( ($('#player-name-input').val().trim() !== '') && (player1 !== null) && (player2 === null) ) {
+
+            // Set name to value entered
+            name = $('#player-name-input').val().trim();
+
+            // Create object components for player 2
+            player2 = {
+                name: name,
+                wins: 0,
+                losses: 0,
+                choice: ""
+            };
+
+            // Add player2 to database
+            database.ref().child("/players/player2").set(player2);
+
+            // If player1 disconnects, remove from database
+            database.ref('/players/player2').onDisconnect().remove();
+        }
         
-        var name = $('#player-name-input').val().trim();
+        // Clear input field
+        $('#player-name-input').val('');
+        
     });
-
-    var player1 = {
-        name: name
-    }
-
-    database.ref(player).push(player1);
-
-    console.log(player1.name);
-
-    $('#player-name-input').val('');
 
     // When the second player enters their name
         // hide name input form
@@ -166,3 +237,6 @@ $(document).ready(function(){
 
     // WHEN A PLAYER LEAVES
 });
+
+
+// https://github.com/angrbrd/multiplayer-rps/blob/master/assets/js/app.js
