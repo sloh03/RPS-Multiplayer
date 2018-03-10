@@ -43,10 +43,17 @@ $(document).ready(function(){
     // In player-2 div, display 'Waiting for Player 2'
 
     $('#player-greeting').hide();
-    $('#player-1-choices').hide();
+    $('#player-turn-status').hide();
+    $('#win-loss-status').hide();
+
+    //$('#player-1-choices').hide();
     $('#player-1-stats').hide();   
-    $('#player-2-choices').hide();
+
+    //$('#player-2-choices').hide();
     $('#player-2-stats').hide();  
+
+    // If player2 disconnects, remove from database
+    database.ref('/players/player2').onDisconnect().remove();
 
 
     // At the initial load and subsequent value changes, get a snapshot of the stored data.
@@ -74,7 +81,7 @@ $(document).ready(function(){
         if (snapshot.child('player2').exists()) {
 
             // Get a snapshot of player 2 object
-            player1 = snapshot.val().player2;
+            player2 = snapshot.val().player2;
             var player2Name = player2.name;
 
             // Update html to show player 2's name
@@ -118,12 +125,12 @@ $(document).ready(function(){
         if ( ($('#player-name-input').val().trim() !== '') && (player1 === null) && (player2 === null) ) {
 
             // Set name to value entered
-            name = $('#player-name-input').val().trim();
-            console.log('Player 1 = ' + name);
+            playerName = $('#player-name-input').val().trim();
+            console.log('Player 1 = ' + playerName);
 
             // Create object components for player 1
             player1 = {
-                name: name,
+                name: playerName,
                 wins: 0,
                 losses: 0,
                 choice: ""
@@ -134,6 +141,8 @@ $(document).ready(function(){
 
             // Set turn value to 1 to indicate player 1 goes first
             database.ref().child('/turn').set(1);
+            turn = 1;
+            console.log(turn);
 
             // If player1 disconnects, remove from database
             database.ref('/players/player1').onDisconnect().remove();
@@ -144,11 +153,12 @@ $(document).ready(function(){
         else if ( ($('#player-name-input').val().trim() !== '') && (player1 !== null) && (player2 === null) ) {
 
             // Set name to value entered
-            name = $('#player-name-input').val().trim();
+            playerName = $('#player-name-input').val().trim();
+            console.log('Player 2 = ' + playerName);
 
             // Create object components for player 2
             player2 = {
-                name: name,
+                name: playerName,
                 wins: 0,
                 losses: 0,
                 choice: ""
@@ -157,7 +167,12 @@ $(document).ready(function(){
             // Add player2 to database
             database.ref().child("/players/player2").set(player2);
 
-            // If player1 disconnects, remove from database
+            // Set turn value to 1 to indicate player 1 goes first
+            database.ref().child('/turn').set(1);
+            turn = 1;
+            console.log(turn);
+
+            // If player2 disconnects, remove from database
             database.ref('/players/player2').onDisconnect().remove();
         }
         
@@ -206,6 +221,125 @@ $(document).ready(function(){
         // On player 2 screen
             // Hide choices
             // Show choices selected for both players 
+
+    // Player 1: On click of a choice 
+    $('#player-1-buttons').on('click', '.choice-btn1', function(event) {
+        event.preventDefault();
+
+        console.log($(this).val());
+        console.log(playerName);
+        console.log(player1.name);
+        console.log(turn);
+
+        // If name registered and is player 1's turn
+        if ( (playerName === player1.name) && (turn === 1) ) {
+
+            // Record player 1's choice value
+            var choice = $(this).val();
+            console.log('Player 1 choice: ' + choice);
+
+            // Send to database
+            var player1Choice = choice;
+            database.ref().child('players/player1/choice').set(player1Choice);
+
+            // Set turn to 2
+            turn = 2;
+            console.log('turn: ' + turn);
+            database.ref().child('turn').set(turn);
+        }
+    });
+
+    // Player 2: On click of a choice
+    $('#player-2-buttons').on('click', '.choice-btn2', function(event) {
+        event.preventDefault();
+
+        console.log($(this).val());
+        console.log(playerName);
+        console.log(player2.name);
+        console.log(turn);
+
+        // Get snapshot of turn
+        database.ref('turn').on('value', function(snapshot) {
+
+            // If turn = 2
+            if (snapshot.val() === 2) {
+
+                // Set var turn to 2
+                turn = 2;
+                console.log('Turn 2 ' + turn);
+
+            }
+        })
+
+        // If name registered and is player 2's turn
+        if ( (playerName === player2.name) && (turn === 2) ) {
+
+            // Record player 2's choice value
+            var choice = $(this).val();
+            console.log('Player 2 choice: ' + choice);
+
+            // Send to database
+            var player2Choice = choice;
+            database.ref().child('players/player2/choice').set(player2Choice);
+
+            // Call function to compare choices
+            compareChoices();
+
+        }
+    });
+
+    // Compare choices, update database and html
+    function compareChoices() {
+
+        // When player 1 chooses rock
+        if ( (player1.choice === 'rock') && (player2.choice === 'rock') ) {
+            console.log('Tie');
+        }
+        else if ( (player1.choice === 'rock') && (player2.choice === 'paper') ) {
+
+            database.ref().child('players/player1/losses').set(player1.losses + 1);
+            database.ref().child('players/player2/wins').set(player2.wins + 1);
+        }
+        else if ( (player1.choice === 'rock') && (player2.choice === 'scissors') ) {
+
+            database.ref().child('players/player1/wins').set(player1.wins + 1);
+            database.ref().child('players/player2/losses').set(player2.losses + 1);
+        }
+
+        // When player 1 chooses paper
+        else if ( (player1.choice === 'paper') && (player2.choice === 'rock') ) {
+
+            database.ref().child('players/player1/wins').set(player1.wins + 1);
+            database.ref().child('players/player2/losses').set(player2.losses + 1);
+        }
+        else if ( (player1.choice === 'paper') && (player2.choice === 'paper') ) {
+            console.log('Tie');
+        }
+        else if ( (player1.choice === 'paper') && (player2.choice === 'scissors') ) {
+
+            database.ref().child('players/player1/losses').set(player1.losses + 1);
+            database.ref().child('players/player2/wins').set(player2.wins + 1);
+        }
+
+        // When player 1 chooses scissors
+        else if ( (player1.choice === 'scissors') && (player2.choice === 'rock') ) {
+
+            database.ref().child('players/player1/losses').set(player1.losses + 1);
+            database.ref().child('players/player2/wins').set(player2.wins + 1);
+        }
+        else if ( (player1.choice === 'scissors') && (player2.choice === 'paper') ) {
+
+            database.ref().child('players/player1/wins').set(player1.wins + 1);
+            database.ref().child('players/player2/losses').set(player2.losses + 1);
+        }
+        else if ( (player1.choice === 'scissors') && (player2.choice === 'scissors') ) {
+            console.log('Tie');
+        }
+
+        // Set turn value back to 1
+        turn = 1;
+        database.ref().child('turn').set(turn);
+    }
 
 
     // When turns = 2
@@ -266,10 +400,10 @@ $(document).ready(function(){
         event.preventDefault();
 
         // If message entered and player name exists
-        if ( (name !== '') && ($('#chat-input').val().trim() !== '') ) {
+        if ( (playerName !== '') && ($('#chat-input').val().trim() !== '') ) {
 
             // Store message in var
-            var message = name + ': ' + $('#chat-input').val().trim();
+            var message = playerName + ': ' + $('#chat-input').val().trim();
 
             // Clear input
             $('#chat-input').val('');
@@ -289,7 +423,7 @@ $(document).ready(function(){
         var chatEntry = $('<div>').html(newMessage);
 
         // Change color of message
-        if (newMessage.startsWith(name)) {
+        if (newMessage.startsWith(playerName)) {
             chatEntry.addClass('selfColor');
         }
         else {
