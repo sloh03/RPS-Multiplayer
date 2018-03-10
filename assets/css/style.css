@@ -27,3 +27,11 @@
 .opponentColor {
     color: #B03A2E;
 }
+
+.highlight {
+    border: 1px solid #2874A6;
+}
+
+#player-turn-status {
+    font-style: italic;
+}

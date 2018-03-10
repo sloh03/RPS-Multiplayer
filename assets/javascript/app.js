@@ -28,6 +28,9 @@ $(document).ready(function(){
             // losses
         // turn = 0;
 
+        var player1Name = "";
+        var player2Name = "";
+
         var name = "";
         var choice = "";
         var wins = 0;
@@ -70,7 +73,7 @@ $(document).ready(function(){
 
             // Get a snapshot of player 1 object
             player1 = snapshot.val().player1;
-            var player1Name = player1.name;
+            player1Name = player1.name;
 
             // Update html
             $('#player-1-name').html('<h3>' + player1Name + '</h3>');
@@ -84,13 +87,24 @@ $(document).ready(function(){
 
             // Get a snapshot of player 2 object
             player2 = snapshot.val().player2;
-            var player2Name = player2.name;
+            player2Name = player2.name;
 
             // Update html to show player 2's name
             $('#player-2-name').html('<h3>' + player2Name + '</h3>');
             $('#player-2-stats').show().html('Wins: ' + player2.wins + ' Losses: ' + player2.losses);  
         }
         // If player 2 does not exist in database
+
+        // If both present, signal player 1 turn
+        if ( (player1 !== null) && (player2 !== null) ) {
+
+            // Highlight player1 display
+            $('#player-1-buttons').addClass('highlight');
+            $('#player-2-buttons').removeClass('highlight');
+
+            // Update turn status
+            $('#player-turn-status').delay(2000).show(0).text('Status: Waiting for ' + player1Name + ' to choose.');
+        }
 
         // NO PLAYERS
         if ( (player1 === null) && (player2 === null) ) {
@@ -100,8 +114,29 @@ $(document).ready(function(){
 
             // Clear chatbox display
             $('#chat-messages').empty();
+
+            // Reset turns
+            turn = 0;
+            database.ref().child('/turn').set(0);
+
+
         }
 
+    });
+
+    // Highlight
+    database.ref('turn').on('value', function(snapshot) {
+
+        if (snapshot.val() === 2) {
+            turn = 2;
+
+                // Switch highlight
+                $('#player-1-buttons').removeClass('highlight');
+                $('#player-2-buttons').addClass('highlight');
+
+                // Update turn status
+                $('#player-turn-status').text('Status: Waiting for ' + player2Name + ' to choose.');
+        }
     });
 
  
@@ -116,6 +151,16 @@ $(document).ready(function(){
             // show name, buttons, and win/loss count in div id 'player-1'
         // For player 2 screen
             // show name and win/loss count only in div id 'player-1'
+    
+    // When the second player enters their name
+        // hide name input form
+        // show 'Hi _______. You are Player 2.'
+        // save name as player 2 in database
+        // hide 'Waiting for Player 2' in div id 'player-2'
+        // For player 1 screen
+            // show name and win/loss count only in div id 'player-1'
+        // For player 2 screen
+            // show name, buttons, and win/loss count in div id 'player-1'
 
     // When 'Start' button clicked
     $("#add-player-btn").on("click", function(event){
@@ -147,8 +192,8 @@ $(document).ready(function(){
             // Hide name input
             $('#name-input').hide();
 
-            // Update status
-            $('#player-turn-status').show().html('Hello ' + playerName + '. You are Player 1');
+            // Update greeting
+            $('#player-greeting').show().html('Hello ' + playerName + '. You are Player 1');
 
             // If player1 disconnects, remove from database
             database.ref('/players/player1').onDisconnect().remove();
@@ -181,8 +226,8 @@ $(document).ready(function(){
             // Hide name input
             $('#name-input').hide();
 
-            // Update status
-            $('#player-turn-status').show().html('Hello ' + playerName + '. You are Player 2');
+            // Update greeting
+            $('#player-greeting').show().html('Hello ' + playerName + '. You are Player 2');
 
             // If player2 disconnects, remove from database
             database.ref('/players/player2').onDisconnect().remove();
@@ -193,16 +238,6 @@ $(document).ready(function(){
         
     });
 
-
-    // When the second player enters their name
-        // hide name input form
-        // show 'Hi _______. You are Player 2.'
-        // save name as player 2 in database
-        // hide 'Waiting for Player 2' in div id 'player-2'
-        // For player 1 screen
-            // show name and win/loss count only in div id 'player-1'
-        // For player 2 screen
-            // show name, buttons, and win/loss count in div id 'player-1'
 
 
     // TURNS AND SCORING
@@ -233,6 +268,7 @@ $(document).ready(function(){
         // On player 2 screen
             // Hide choices
             // Show choices selected for both players 
+    
 
     // Player 1: On click of a choice 
     $('#player-1-buttons').on('click', '.choice-btn1', function(event) {
@@ -242,6 +278,19 @@ $(document).ready(function(){
         console.log(playerName);
         console.log(player1.name);
         console.log(turn);
+
+        // Get snapshot of turn
+        database.ref('turn').on('value', function(snapshot) {
+
+            // If turn = 1
+            if (snapshot.val() === 1) {
+
+                // Set var turn to 1
+                turn = 1;
+                console.log('Turn 1 ' + turn);
+
+            }
+        })
 
         // If name registered and is player 1's turn
         if ( (playerName === player1.name) && (turn === 1) ) {
@@ -311,6 +360,8 @@ $(document).ready(function(){
 
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
+            $('#player-turn-status').hide();
+            $('#win-loss-status').show(0).text(player2Name + ' Wins!').delay(2000).hide(0);
         }
         else if ( (player1.choice === 'rock') && (player2.choice === 'scissors') ) {
 
@@ -331,6 +382,8 @@ $(document).ready(function(){
 
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
+            $('#player-turn-status').hide();
+            $('#win-loss-status').show(0).text(player2Name + ' Wins!').delay(2000).hide(0);
         }
 
         // When player 1 chooses scissors
@@ -338,6 +391,8 @@ $(document).ready(function(){
 
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
+            $('#player-turn-status').hide();
+            $('#win-loss-status').show(0).text(player2Name + ' Wins!').delay(2000).hide(0);
         }
         else if ( (player1.choice === 'scissors') && (player2.choice === 'paper') ) {
 
