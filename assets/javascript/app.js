@@ -36,6 +36,18 @@ $(document).ready(function(){
     
         var chat = '';
 
+    
+    // INITIAL PAGE SET UP
+    // Diplay name form
+    // In player-1 div, display 'Waiting for Player 1'
+    // In player-2 div, display 'Waiting for Player 2'
+
+    $('#player-greeting').hide();
+    $('#player-1-choices').hide();
+    $('#player-1-stats').hide();   
+    $('#player-2-choices').hide();
+    $('#player-2-stats').hide();  
+
 
     // At the initial load and subsequent value changes, get a snapshot of the stored data.
     // This function allows you to update your page in real-time when the firebase database changes.
@@ -52,6 +64,8 @@ $(document).ready(function(){
 
             // Update html
             $('#player-1-name').html('<h3>' + player1Name + '</h3>');
+            $('#player-1-choices').show();
+            $('#player-1-stats').show();  
         }
         // If player 1 does not exist in database
 
@@ -65,6 +79,8 @@ $(document).ready(function(){
 
             // Update html to show player 2's name
             $('#player-2-name').html('<h3>' + player2Name + '</h3>');
+            $('#player-2-choices').show();
+            $('#player-2-stats').show();  
         }
         // If player 2 does not exist in database
 
@@ -80,14 +96,7 @@ $(document).ready(function(){
 
     });
 
-
-    // INITIAL PAGE SET UP
-    // Diplay name form
-    // In player-1 div, display 'Waiting for Player 1'
-    // In player-2 div, display 'Waiting for Player 2'
-
-    $('#player-greeting').hide();
-    
+ 
 
 
     // SETTING PLAYERS UP AND SAVING TO DATABASE
@@ -156,6 +165,7 @@ $(document).ready(function(){
         $('#player-name-input').val('');
         
     });
+
 
     // When the second player enters their name
         // hide name input form
