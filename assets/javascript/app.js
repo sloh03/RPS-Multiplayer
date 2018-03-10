@@ -46,19 +46,22 @@ $(document).ready(function(){
     $('#player-turn-status').hide();
     $('#win-loss-status').hide();
 
-    //$('#player-1-choices').hide();
     $('#player-1-stats').hide();   
-
-    //$('#player-2-choices').hide();
     $('#player-2-stats').hide();  
+
+
+
+    //GENERAL
+    // If player1 disconnects, remove from database
+    database.ref('/players/player1').onDisconnect().remove();
 
     // If player2 disconnects, remove from database
     database.ref('/players/player2').onDisconnect().remove();
 
 
+
     // At the initial load and subsequent value changes, get a snapshot of the stored data.
-    // This function allows you to update your page in real-time when the firebase database changes.
-    // ?
+    // This function allows to update page in real-time when the firebase database changes.
     database.ref('players').on('value', function(snapshot) {
 
         // PLAYER 1
@@ -71,8 +74,7 @@ $(document).ready(function(){
 
             // Update html
             $('#player-1-name').html('<h3>' + player1Name + '</h3>');
-            $('#player-1-choices').show();
-            $('#player-1-stats').show();  
+            $('#player-1-stats').show().html('Wins: ' + player1.wins + ' Losses: ' + player1.losses);  
         }
         // If player 1 does not exist in database
 
@@ -86,8 +88,7 @@ $(document).ready(function(){
 
             // Update html to show player 2's name
             $('#player-2-name').html('<h3>' + player2Name + '</h3>');
-            $('#player-2-choices').show();
-            $('#player-2-stats').show();  
+            $('#player-2-stats').show().html('Wins: ' + player2.wins + ' Losses: ' + player2.losses);  
         }
         // If player 2 does not exist in database
 
@@ -104,7 +105,6 @@ $(document).ready(function(){
     });
 
  
-
 
     // SETTING PLAYERS UP AND SAVING TO DATABASE
     // When the first player enters their name
@@ -144,6 +144,12 @@ $(document).ready(function(){
             turn = 1;
             console.log(turn);
 
+            // Hide name input
+            $('#name-input').hide();
+
+            // Update status
+            $('#player-turn-status').show().html('Hello ' + playerName + '. You are Player 1');
+
             // If player1 disconnects, remove from database
             database.ref('/players/player1').onDisconnect().remove();
 
@@ -171,6 +177,12 @@ $(document).ready(function(){
             database.ref().child('/turn').set(1);
             turn = 1;
             console.log(turn);
+
+            // Hide name input
+            $('#name-input').hide();
+
+            // Update status
+            $('#player-turn-status').show().html('Hello ' + playerName + '. You are Player 2');
 
             // If player2 disconnects, remove from database
             database.ref('/players/player2').onDisconnect().remove();
