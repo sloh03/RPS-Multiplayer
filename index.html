@@ -43,12 +43,14 @@
         <div class="row">
             <div class="col-xs-12">
                 <!-- Name Form -->
-                <div class="input-group" id="name-input">
-                    <input type="text" class="form-control" placeholder="Name" id="player-name-input">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="add-player-btn">Start</button>
-                    </span>
-                </div>
+                <form id="name">
+                    <div class="input-group" id="name-input">
+                        <input type="text" class="form-control" placeholder="Name" id="player-name-input">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit" id="add-player-btn">Start</button>
+                        </span>
+                    </div>
+                </form>
                 <!-- Welcome Message -->
                 <h4 class="text-center" id="player-greeting"></h4>
             </div>
@@ -100,17 +102,19 @@
         <!-- Row 5 -->
         <div class="row">
             <div class="col-xs-12">
-                <!-- Chat Messages -->
+                <!-- Chat Messages Display-->
                 <div>
                     <div class="well" id="chat-messages"></div>
                 </div>
-                <!-- Chat Input -->
-                <div class="input-group" id="chat">
-                    <input type="text" class="form-control" placeholder="Enter message" id="chat-input">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="send-message-btn">Send</button>
-                    </span>
-                </div>
+                <!-- Chat Text Input -->
+                <form id="chat">
+                    <div class="input-group" id="chat">
+                        <input type="text" class="form-control" placeholder="Enter message" id="chat-input">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit" id="send-message-btn">Send</button>
+                        </span>
+                    </div>
+                </form>
             </div>
         </div>
 

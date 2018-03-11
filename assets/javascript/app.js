@@ -139,6 +139,12 @@ $(document).ready(function(){
         }
     });
 
+
+
+    database.ref('outcome').on('value', function(snapshot) {
+        $('#win-loss-status').show(0).text(snapshot.val()).delay(2000).hide(0);
+    })
+
  
 
     // SETTING PLAYERS UP AND SAVING TO DATABASE
@@ -163,7 +169,7 @@ $(document).ready(function(){
             // show name, buttons, and win/loss count in div id 'player-1'
 
     // When 'Start' button clicked
-    $("#add-player-btn").on("click", function(event){
+    $("#name").on("click", function(event){
         event.preventDefault();
 
         // If a name is entered when no players exist
@@ -354,52 +360,56 @@ $(document).ready(function(){
 
         // When player 1 chooses rock
         if ( (player1.choice === 'rock') && (player2.choice === 'rock') ) {
+            database.ref().child('outcome').set('You tied');
             console.log('Tie');
         }
         else if ( (player1.choice === 'rock') && (player2.choice === 'paper') ) {
 
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
-            $('#player-turn-status').hide();
-            $('#win-loss-status').show(0).text(player2Name + ' Wins!').delay(2000).hide(0);
+            database.ref().child('outcome').set(player2Name + ' Wins!');
+
         }
         else if ( (player1.choice === 'rock') && (player2.choice === 'scissors') ) {
 
             database.ref().child('players/player1/wins').set(player1.wins + 1);
             database.ref().child('players/player2/losses').set(player2.losses + 1);
+            database.ref().child('outcome').set(player1Name + ' Wins!');
         }
 
         // When player 1 chooses paper
-        else if ( (player1.choice === 'paper') && (player2.choice === 'rock') ) {
+        else if ( (player1.choice === 'paper') && (player2.choice === 'rock') ) { // This one not working
 
             database.ref().child('players/player1/wins').set(player1.wins + 1);
             database.ref().child('players/player2/losses').set(player2.losses + 1);
+            database.ref().child('outcome').set(player1Name + ' Wins!');
         }
         else if ( (player1.choice === 'paper') && (player2.choice === 'paper') ) {
+            database.ref().child('outcome').set('You tied');
             console.log('Tie');
         }
         else if ( (player1.choice === 'paper') && (player2.choice === 'scissors') ) {
 
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
-            $('#player-turn-status').hide();
-            $('#win-loss-status').show(0).text(player2Name + ' Wins!').delay(2000).hide(0);
+            database.ref().child('outcome').set(player2Name + ' Wins!');
         }
 
         // When player 1 chooses scissors
-        else if ( (player1.choice === 'scissors') && (player2.choice === 'rock') ) {
+        else if ( (player1.choice === 'scissors') && (player2.choice === 'rock') ) { // This one not working
 
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
-            $('#player-turn-status').hide();
-            $('#win-loss-status').show(0).text(player2Name + ' Wins!').delay(2000).hide(0);
+            database.ref().child('outcome').set(player2Name + ' Wins!');
         }
-        else if ( (player1.choice === 'scissors') && (player2.choice === 'paper') ) {
+        else if ( (player1.choice === 'scissors') && (player2.choice === 'paper') ) { // This one not working
 
             database.ref().child('players/player1/wins').set(player1.wins + 1);
             database.ref().child('players/player2/losses').set(player2.losses + 1);
+            database.ref().child('outcome').set(player1Name + ' Wins!');
         }
         else if ( (player1.choice === 'scissors') && (player2.choice === 'scissors') ) {
+            database.ref().child('outcome').set('You tied');
             console.log('Tie');
         }
 
@@ -463,7 +473,7 @@ $(document).ready(function(){
 
     // CHAT
     // When 'Send' button clicked, add to database
-    $('#send-message-btn').on('click', function(event) {
+    $('#chat').on('submit', function(event) {
         event.preventDefault();
 
         // If message entered and player name exists
@@ -499,6 +509,9 @@ $(document).ready(function(){
 
         // Add to chat display
         $('#chat-messages').append(chatEntry);
+
+        // Scroll to bottom of messages
+        $('#chat-messages').stop().animate({ scrollTop: $('#chat-messages')[0].scrollHeight}, 1000);
 
     })
 });
