@@ -1,7 +1,6 @@
 $(document).ready(function(){
         
-    // SET UP DATABASE mission manor
-
+    // SET UP DATABASE
     // Initialize Firebase
     var config = {
     apiKey: "AIzaSyDGwzf1VHh1VdTK2fRqBZrv0T29xGlYqfU",
@@ -16,35 +15,27 @@ $(document).ready(function(){
     // Assign reference to database to var 'database'
     var database = firebase.database();
 
+
+    // GLOBAL VAR
     // Create objects for the 2 players
     var player1 = null;
     var player2 = null;
 
     // Set initial values for each player and turn
-        // player
-            // name
-            // choice
-            // wins
-            // losses
-        // turn = 0;
+    var player1Name = "";
+    var player2Name = "";
 
-        var player1Name = "";
-        var player2Name = "";
+    var name = "";
+    var choice = "";
+    var wins = 0;
+    var losses = 0;
+    var turn = 0;
 
-        var name = "";
-        var choice = "";
-        var wins = 0;
-        var losses = 0;
-        var turn = 0;
-    
-        var chat = '';
+    var chat = '';
+
 
     
     // INITIAL PAGE SET UP
-    // Diplay name form
-    // In player-1 div, display 'Waiting for Player 1'
-    // In player-2 div, display 'Waiting for Player 2'
-
     $('#player-greeting').hide();
     $('#player-turn-status').hide();
     $('#win-loss-status').hide();
@@ -55,11 +46,11 @@ $(document).ready(function(){
 
 
     //GENERAL
-    // If player1 disconnects, remove from database
+    // If players disconnect, remove from database
     database.ref('/players/player1').onDisconnect().remove();
-
-    // If player2 disconnects, remove from database
     database.ref('/players/player2').onDisconnect().remove();
+
+    database.ref('outcome').onDisconnect().remove();
 
 
 
