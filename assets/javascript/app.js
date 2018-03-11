@@ -15,7 +15,6 @@ $(document).ready(function(){
     // Assign reference to database to var 'database'
     var database = firebase.database();
 
-
     // GLOBAL VAR
     // Create objects for the 2 players
     var player1 = null;
@@ -33,8 +32,6 @@ $(document).ready(function(){
 
     var chat = '';
 
-
-    
     // INITIAL PAGE SET UP
     $('#player-greeting').hide();
     $('#player-turn-status').hide();
@@ -43,122 +40,7 @@ $(document).ready(function(){
     $('#player-1-stats').hide();   
     $('#player-2-stats').hide();  
 
-
-
-    //GENERAL
-    // If players disconnect, remove from database
-    database.ref('/players/player1').onDisconnect().remove();
-    database.ref('/players/player2').onDisconnect().remove();
-
-    database.ref('outcome').onDisconnect().remove();
-
-
-
-    // At the initial load and subsequent value changes, get a snapshot of the stored data.
-    // This function allows to update page in real-time when the firebase database changes.
-    database.ref('players').on('value', function(snapshot) {
-
-        // PLAYER 1
-        // If player 1 exists in the database
-        if (snapshot.child('player1').exists()) {
-
-            // Get a snapshot of player 1 object
-            player1 = snapshot.val().player1;
-            player1Name = player1.name;
-
-            // Update html
-            $('#player-1-name').html('<h3>' + player1Name + '</h3>');
-            $('#player-1-stats').show().html('Wins: ' + player1.wins + ' Losses: ' + player1.losses);  
-        }
-        // If player 1 does not exist in database
-
-        // PLAYER 2
-        // If player 2 exists in the database
-        if (snapshot.child('player2').exists()) {
-
-            // Get a snapshot of player 2 object
-            player2 = snapshot.val().player2;
-            player2Name = player2.name;
-
-            // Update html to show player 2's name
-            $('#player-2-name').html('<h3>' + player2Name + '</h3>');
-            $('#player-2-stats').show().html('Wins: ' + player2.wins + ' Losses: ' + player2.losses);  
-        }
-        // If player 2 does not exist in database
-
-        // If both present, signal player 1 turn
-        if ( (player1 !== null) && (player2 !== null) ) {
-
-            // Highlight player1 display
-            $('#player-1-buttons').addClass('highlight');
-            $('#player-2-buttons').removeClass('highlight');
-
-            // Update turn status
-            $('#player-turn-status').delay(2000).show(0).text('Status: Waiting for ' + player1Name + ' to choose.');
-        }
-
-        // NO PLAYERS
-        if ( (player1 === null) && (player2 === null) ) {
-
-            // Remove chat from database storage
-            database.ref('chat').remove();
-
-            // Clear chatbox display
-            $('#chat-messages').empty();
-
-            // Reset turns
-            turn = 0;
-            database.ref().child('/turn').set(0);
-
-
-        }
-
-    });
-
-    // Highlight
-    database.ref('turn').on('value', function(snapshot) {
-
-        if (snapshot.val() === 2) {
-            turn = 2;
-
-                // Switch highlight
-                $('#player-1-buttons').removeClass('highlight');
-                $('#player-2-buttons').addClass('highlight');
-
-                // Update turn status
-                $('#player-turn-status').text('Status: Waiting for ' + player2Name + ' to choose.');
-        }
-    });
-
-
-
-    database.ref('outcome').on('value', function(snapshot) {
-        $('#win-loss-status').show(0).text(snapshot.val()).delay(2000).hide(0);
-    })
-
- 
-
-    // SETTING PLAYERS UP AND SAVING TO DATABASE
-    // When the first player enters their name
-        // hide name input form
-        // show 'Hi _______. You are Player 1.'
-        // save name as player 1 in database
-        // hide 'Waiting for Player 1' in div id 'player-1'
-        // For player 1 screen
-            // show name, buttons, and win/loss count in div id 'player-1'
-        // For player 2 screen
-            // show name and win/loss count only in div id 'player-1'
-    
-    // When the second player enters their name
-        // hide name input form
-        // show 'Hi _______. You are Player 2.'
-        // save name as player 2 in database
-        // hide 'Waiting for Player 2' in div id 'player-2'
-        // For player 1 screen
-            // show name and win/loss count only in div id 'player-1'
-        // For player 2 screen
-            // show name, buttons, and win/loss count in div id 'player-1'
-
+    // ADD PLAYER
     // When 'Start' button clicked
     $("#name").on("click", function(event){
         event.preventDefault();
@@ -235,46 +117,80 @@ $(document).ready(function(){
         
     });
 
+    // SET REAL-TIME UPDATES
+    // At the initial load and subsequent value changes, get a snapshot of the stored data
+    database.ref('players').on('value', function(snapshot) {
 
+        // NO PLAYERS
+        if ( (player1 === null) && (player2 === null) ) {
 
-    // TURNS AND SCORING
-    // At the beginning of a game
-    // Highlight player 1 area
-        // On player 1 screen
-            // Display 'It's your turn' in #player-turn-status
-            // Show choices 
-        // On player 2 screen
-            // Display 'Waiting for ___________(player 1 name) to choose.' in #player-turn-status
-            // All choices hidden
-    // When player 1 chooses rock, paper or scissors
-        // Store in respective database
-        // add 1 to var 'turn'
-        // Highlight player 2 area
-        // On player 1's screen
-            // Hide choices
-            // Show selected choice in big font
-            // Display 'Waiting for ___________(player 2 name) to choose.' in #player-turn-status
-        // On player 2 screen
-            // Display 'It's your turn' in #player-turn-status
-            // Show choices
-    // When player 2 chooses rock, paper, or scissors
-        // Store in respective database
-        // add 1 to var 'turn'
-        // On player 1 screen
-            // Show choice selected for player 2
-        // On player 2 screen
-            // Hide choices
-            // Show choices selected for both players 
-    
+            // Remove chat from database storage
+            database.ref('chat').remove();
 
-    // Player 1: On click of a choice 
+            // Clear chatbox display
+            $('#chat-messages').empty();
+
+            // Reset turns
+            turn = 0;
+            database.ref().child('/turn').set(0);
+        }
+        // PLAYER 1
+        if (snapshot.child('player1').exists()) {
+
+            // Store name
+            player1 = snapshot.val().player1;
+            player1Name = player1.name;
+
+            // Update html with name and stats
+            $('#player-1-name').html('<h3>' + player1Name + '</h3>');
+            $('#player-1-stats').show().html('Wins: ' + player1.wins + ' Losses: ' + player1.losses);  
+        }
+
+        // PLAYER 2
+        if (snapshot.child('player2').exists()) {
+
+            // Store name
+            player2 = snapshot.val().player2;
+            player2Name = player2.name;
+
+            // Update html with name and stats
+            $('#player-2-name').html('<h3>' + player2Name + '</h3>');
+            $('#player-2-stats').show().html('Wins: ' + player2.wins + ' Losses: ' + player2.losses);  
+        }
+
+        // If both players present, signal player 1 turn
+        if ( (player1 !== null) && (player2 !== null) ) {
+
+            // Highlight player1 display
+            $('#player-1-buttons').addClass('highlight');
+            $('#player-2-buttons').removeClass('highlight');
+
+            // Update turn status
+            $('#player-turn-status').delay(1000).show(0).text('Status: Waiting for ' + player1Name + ' to choose.');
+        }
+    });
+
+    // SWITCH TURNS
+    // Switch to signal player 2 turn
+    database.ref('turn').on('value', function(snapshot) {
+
+        if (snapshot.val() === 2) {
+            turn = 2;
+
+            // Switch highlight
+            $('#player-1-buttons').removeClass('highlight');
+            $('#player-2-buttons').addClass('highlight');
+
+            // Update turn status
+            $('#player-turn-status').text('Status: Waiting for ' + player2Name + ' to choose.');
+        }
+    });
+
+    // PLAYER 1 TURN
+    // On click of a choice 
     $('#player-1-buttons').on('click', '.choice-btn1', function(event) {
         event.preventDefault();
-
-        console.log($(this).val());
-        console.log(playerName);
-        console.log(player1.name);
-        console.log(turn);
+        console.log(playerName + ': ' + $(this).val());
 
         // Get snapshot of turn
         database.ref('turn').on('value', function(snapshot) {
@@ -285,7 +201,6 @@ $(document).ready(function(){
                 // Set var turn to 1
                 turn = 1;
                 console.log('Turn 1 ' + turn);
-
             }
         })
 
@@ -307,14 +222,12 @@ $(document).ready(function(){
         }
     });
 
-    // Player 2: On click of a choice
+    // PLAYER 2 TURN
+    // On click of a choice
     $('#player-2-buttons').on('click', '.choice-btn2', function(event) {
         event.preventDefault();
 
-        console.log($(this).val());
-        console.log(playerName);
-        console.log(player2.name);
-        console.log(turn);
+        console.log(playerName + ': ' + $(this).val());
 
         // Get snapshot of turn
         database.ref('turn').on('value', function(snapshot) {
@@ -324,8 +237,6 @@ $(document).ready(function(){
 
                 // Set var turn to 2
                 turn = 2;
-                console.log('Turn 2 ' + turn);
-
             }
         })
 
@@ -346,6 +257,7 @@ $(document).ready(function(){
         }
     });
 
+    // CHECK FOR WINNER
     // Compare choices, update database and html
     function compareChoices() {
 
@@ -409,60 +321,24 @@ $(document).ready(function(){
         database.ref().child('turn').set(turn);
     }
 
+    // DISPLAY GAME RESULT
+    // At end of a round, display game outcome for 2 seconds
+    database.ref('outcome').on('value', function(snapshot) {
+        if (snapshot.val().exists()) {
+            $('#win-loss-status').show(0).text(snapshot.val()).delay(2000).hide(0);
+        }
+        else {
+            $('#win-loss-status').hide();
+        }
+    })
 
-    // When turns = 2
-        // Check player choices
-            // If player 1 selects rock and player 2 selects rock
-                // Display 'You tie!' in #win-loss-status
-                // Restart game (reset choices)
-            // Else if player 1 selects rock and 2 selects paper
-                // Add 1 to player 1 losses
-                // Add 1 to player 2 wins
-                // Display '__________ (player 2 name) wins!' in #win-loss-status
-                // Restart game (reset choices)
-            // Else if player 1 selects rock and 2 selects scissors
-                // Add 1 to player 1 wins
-                // Add 1 to player 2 losses
-                // Display '__________ (player 1 name) wins!' in #win-loss-status
-                // Restart game (reset choices)
+    // ON DISCONNECT
+    // Clear database
+    database.ref('/players/player1').onDisconnect().remove();
+    database.ref('/players/player2').onDisconnect().remove();
+    database.ref('outcome').onDisconnect().remove();
 
-            // Else if player 1 selects paper and 2 selects rock
-                // Add 1 to player 1 wins
-                // Add 1 to player 2 losses
-                // Display '__________ (player 1 name) wins!' in #win-loss-status
-                // Restart game (reset choices)
-            // Else if player 1 selects paper and 2 selects paper
-                // Display 'You tie!' in #win-loss-status
-                // Restart game (reset choices)
-            // Else if player 1 selects paper and 2 selects scissors
-                // Add 1 to player 1 losses
-                // Add 1 to player 2 wins
-                // Display '__________ (player 2 name) wins!' in #win-loss-status
-                // Restart game (reset choices)
-
-            // Else if player 1 selects scissors and 2 selects rock
-                // Add 1 to player 1 losses
-                // Add 1 to player 2 wins
-                // Display '__________ (player 2 name) wins!' in #win-loss-status
-                // Restart game (reset choices)
-            // Else if player 1 selects scissors and 2 selects paper
-                // Add 1 to player 1 wins
-                // Add 1 to player 2 losses
-                // Display '__________ (player 1 name) wins!' in #win-loss-status
-                // Restart game (reset choices)
-            // Else if player 1 selects scissors and 2 selects scissors
-                // Display 'You tie!' in #win-loss-status
-                // Restart game (reset choices)
-
-    // RESTART FUNCTION
-        // Hide selected choice
-        // Show choices available and win/loss count
-        // Clear center 'win-loss-status' display
-
-
-    // WHEN A PLAYER LEAVES
-
-    // CHAT
+    // CHAT INPUT
     // When 'Send' button clicked, add to database
     $('#chat').on('submit', function(event) {
         event.preventDefault();
@@ -482,6 +358,7 @@ $(document).ready(function(){
         }
     })
 
+    // CHAT DISPLAY
     // Display new messages to chatbox
     database.ref('chat').on('child_added', function(snapshot) {
 
