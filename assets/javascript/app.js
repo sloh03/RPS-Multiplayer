@@ -72,7 +72,7 @@ $(document).ready(function(){
             $('#name-input').hide();
 
             // Update greeting
-            $('#player-greeting').show().html('Hello ' + playerName + '. You are Player 1');
+            $('#player-greeting').show().html('Hello ' + playerName + '. You are Player 1.');
 
             // If player1 disconnects, remove from database
             database.ref('/players/player1').onDisconnect().remove();
@@ -106,7 +106,7 @@ $(document).ready(function(){
             $('#name-input').hide();
 
             // Update greeting
-            $('#player-greeting').show().html('Hello ' + playerName + '. You are Player 2');
+            $('#player-greeting').show().html('Hello ' + playerName + '. You are Player 2.');
 
             // If player2 disconnects, remove from database
             database.ref('/players/player2').onDisconnect().remove();
@@ -166,7 +166,7 @@ $(document).ready(function(){
             $('#player-2-buttons').removeClass('highlight');
 
             // Update turn status
-            $('#player-turn-status').delay(1000).show(0).text('Status: Waiting for ' + player1Name + ' to choose.');
+            $('#player-turn-status').delay(1000).show(500).text('Status: Waiting for ' + player1Name + ' to choose.');
         }
     });
 
@@ -324,8 +324,8 @@ $(document).ready(function(){
     // DISPLAY GAME RESULT
     // At end of a round, display game outcome for 2 seconds
     database.ref('outcome').on('value', function(snapshot) {
-        if (snapshot.val().exists()) {
-            $('#win-loss-status').show(0).text(snapshot.val()).delay(2000).hide(0);
+        if (snapshot.val() !== null) {
+            $('#win-loss-status').slideDown(500).text(snapshot.val()).delay(1000).hide(0);
         }
         else {
             $('#win-loss-status').hide();
