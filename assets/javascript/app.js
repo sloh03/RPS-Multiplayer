@@ -100,7 +100,6 @@ $(document).ready(function(){
             // Set turn value to 1 to indicate player 1 goes first
             database.ref().child('/turn').set(1);
             turn = 1;
-            console.log(turn);
 
             // Hide name input
             $('#name-input').hide();
@@ -190,17 +189,13 @@ $(document).ready(function(){
     // On click of a choice 
     $('#player-1-buttons').on('click', '.choice-btn1', function(event) {
         event.preventDefault();
-        console.log(playerName + ': ' + $(this).val());
 
         // Get snapshot of turn
         database.ref('turn').on('value', function(snapshot) {
 
-            // If turn = 1
+            // Match turn to snapshot
             if (snapshot.val() === 1) {
-
-                // Set var turn to 1
                 turn = 1;
-                console.log('Turn 1 ' + turn);
             }
         })
 
@@ -209,15 +204,14 @@ $(document).ready(function(){
 
             // Record player 1's choice value
             var choice = $(this).val();
-            console.log('Player 1 choice: ' + choice);
+            console.log('Player 1, ' + playerName + ': ' + choice);
 
             // Send to database
             var player1Choice = choice;
             database.ref().child('players/player1/choice').set(player1Choice);
 
-            // Set turn to 2
+            // Match turn to snapshot
             turn = 2;
-            console.log('turn: ' + turn);
             database.ref().child('turn').set(turn);
         }
     });
@@ -227,15 +221,11 @@ $(document).ready(function(){
     $('#player-2-buttons').on('click', '.choice-btn2', function(event) {
         event.preventDefault();
 
-        console.log(playerName + ': ' + $(this).val());
-
         // Get snapshot of turn
         database.ref('turn').on('value', function(snapshot) {
 
             // If turn = 2
             if (snapshot.val() === 2) {
-
-                // Set var turn to 2
                 turn = 2;
             }
         })
@@ -245,7 +235,7 @@ $(document).ready(function(){
 
             // Record player 2's choice value
             var choice = $(this).val();
-            console.log('Player 2 choice: ' + choice);
+            console.log('Player 2, ' + playerName + ': ' + choice);
 
             // Send to database
             var player2Choice = choice;
@@ -258,7 +248,8 @@ $(document).ready(function(){
     });
 
     // CHECK FOR WINNER
-    // Compare choices, update database and html
+    // Compare choices, update database and 
+    // What makes it console log to player 2's console?
     function compareChoices() {
 
         // When player 1 chooses rock
@@ -271,6 +262,7 @@ $(document).ready(function(){
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
             database.ref().child('outcome').set(player2Name + ' Wins!');
+            console.log(player2Name + ' Wins');
 
         }
         else if ( (player1.choice === 'rock') && (player2.choice === 'scissors') ) {
@@ -278,6 +270,7 @@ $(document).ready(function(){
             database.ref().child('players/player1/wins').set(player1.wins + 1);
             database.ref().child('players/player2/losses').set(player2.losses + 1);
             database.ref().child('outcome').set(player1Name + ' Wins!');
+            console.log(player1Name + ' Wins');
         }
 
         // When player 1 chooses paper
@@ -286,6 +279,7 @@ $(document).ready(function(){
             database.ref().child('players/player1/wins').set(player1.wins + 1);
             database.ref().child('players/player2/losses').set(player2.losses + 1);
             database.ref().child('outcome').set(player1Name + ' Wins!');
+            console.log(player1Name + ' Wins');
         }
         else if ( (player1.choice === 'paper') && (player2.choice === 'paper') ) {
             database.ref().child('outcome').set('You tied');
@@ -296,6 +290,7 @@ $(document).ready(function(){
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
             database.ref().child('outcome').set(player2Name + ' Wins!');
+            console.log(player2Name + ' Wins');
         }
 
         // When player 1 chooses scissors
@@ -304,12 +299,14 @@ $(document).ready(function(){
             database.ref().child('players/player1/losses').set(player1.losses + 1);
             database.ref().child('players/player2/wins').set(player2.wins + 1);
             database.ref().child('outcome').set(player2Name + ' Wins!');
+            console.log(player2Name + ' Wins');
         }
         else if ( (player1.choice === 'scissors') && (player2.choice === 'paper') ) { // This one not working
 
             database.ref().child('players/player1/wins').set(player1.wins + 1);
             database.ref().child('players/player2/losses').set(player2.losses + 1);
             database.ref().child('outcome').set(player1Name + ' Wins!');
+            console.log(player1Name + ' Wins');
         }
         else if ( (player1.choice === 'scissors') && (player2.choice === 'scissors') ) {
             database.ref().child('outcome').set('You tied');
