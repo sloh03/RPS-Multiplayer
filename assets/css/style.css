@@ -1,16 +1,34 @@
+/*********************
+MAIN
+*********************/
+
+/* Background: https://pixabay.co */
+body {
+    background-image: url('cartoon-2640561_1920.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 #logo {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 100%;
+    width: 70%;
     margin-top: 2%;
 }
+
+
+
+/*********************
+FORMS
+*********************/
 
 .input-group {
     width: 300px;
     margin: auto;
 }
 
+/* Chat */
 #chat-messages {
     height: 100px;
     overflow: scroll;
@@ -29,10 +47,27 @@
     color: #B03A2E;
 }
 
-.highlight {
-    border: 1px solid #2874A6;
+
+
+/*********************
+PLAYER UPDATES
+*********************/
+
+#player-greeting {
+    color: #fff;
 }
 
 #player-turn-status {
     font-style: italic;
+    color: #fff;
+    font-size: 2em;
+}
+
+#win-loss-status {
+    color: #fff;
+}
+
+/* Player Turn */
+.highlight {
+    border: 1px solid #2874A6;
 }
